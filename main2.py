@@ -34,9 +34,13 @@ class Graph:
         self.graph_dict = {}
 
     def __str__(self):
-        return self.graph_dict
+        all_edges = ""
+        for vertex in self.graph_dict:
+            for neighbors in self.graph_dict[vertex]:
+                all_edges += vertex.get_name() + " ---> " + neighbors.get_name() + "\n"
+        return all_edges
 
-    # Añade un vertice al grafo
+    # Añade un vértice al grafo
     def add_vertex(self, vertex):
         if vertex in self.graph_dict:
             return "El vértice ya está en el grafo"
@@ -54,7 +58,7 @@ class Graph:
                 return v
         print(f"El vétice {vertex_name} no existe")
 
-    def bfs(self, start):
+    def BFS(self, start):
         visited = []
         queue = []
 
@@ -70,28 +74,46 @@ class Graph:
                     visited.append(neighbour)
                     queue.append(neighbour)
 
+    def DFS(self, start, visited=None):
+        if visited is None:
+            visited = set()
+
+        if start not in visited:
+            print(start)
+            visited.add(start)
+
+            for neighbour in self.graph_dict[start]:
+                if neighbour not in visited:
+                    self.DFS(neighbour, visited)
+
 # Programa principal
 g = Graph()
 
-# Creando vertices
+# Creando vértices
 vertex_a = Vertex('a')
 vertex_b = Vertex('b')
 vertex_c = Vertex('c')
 vertex_d = Vertex('d')
-vertex_z = Vertex('z')
 
-# Añadir vertices al grafo 
+# Añadir vértices al grafo 
 g.add_vertex(vertex_a)
 g.add_vertex(vertex_b)
 g.add_vertex(vertex_c)
 g.add_vertex(vertex_d)
-g.add_vertex(vertex_z)
 
-# Creamos aristas a partir de los vertices existentes en el grafo
+# Creamos aristas a partir de los vértices existentes en el grafo
 g.add_edge(Edge(vertex_a, vertex_b))
 g.add_edge(Edge(vertex_a, vertex_c))
 g.add_edge(Edge(vertex_b, vertex_d))
-g.add_edge(Edge(vertex_d, vertex_z))
 
-# Metodo del grafo bfs
-g.bfs(vertex_z)
+# Método del grafo BFS
+
+#g.BFS(vertex_a)
+
+# Método del grafo DFS
+
+#g.DFS(vertex_a)
+
+# Mostrar adyacencias de vértices
+
+print(g)
