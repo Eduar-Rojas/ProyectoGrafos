@@ -150,8 +150,40 @@ class Graph:
                     for vecino, pesoB in self.graph_dict[nodoA]:
                         if vecino not in visitados:
                             heapq.heappush(cola, (pesoB, vecino))
-
         return arbolSM, suma_total
+    
+    def kruskal(self):
+        edges = []#almacena aristas
+        for vertex, neighbors in self.graph_dict.items():#recorre el grafo
+            for neighbor, weight in neighbors:
+                edges.append((weight, vertex, neighbor))#añade como tupla el peso y los vertices que forman la arista
+
+        edges.sort(key=lambda edge: edge[0])#ordena las aristas en orden ascendente
+
+        parent = {vertex: vertex for vertex in self.graph_dict}
+
+        def find(v):# encuentra la raíz del conjunto al que pertenece un vértice
+            if parent[v] != v:
+                parent[v] = find(parent[v])
+            return parent[v]
+
+        def union(v1, v2):#une dos conjuntos disjuntos especificando sus representantes.
+            root1 = find(v1)
+            root2 = find(v2)
+            parent[root1] = root2
+
+        minimum_spanning_tree = []#arbol de expansion minima
+        total_weight = 0#peso total
+
+        for edge in edges:#
+            weight, vertex_1, vertex_2 = edge
+            if find(vertex_1) != find(vertex_2):#VERIFICA si son del mismo conjunto disconjunto(estudiar)
+                union(vertex_1, vertex_2)#si no es asi los une y agrega al arbol de expansion minima
+                minimum_spanning_tree.append((vertex_1.get_name(), vertex_2.get_name(), weight))
+                total_weight += weight#y suma el peso
+
+        return minimum_spanning_tree, total_weight
+
 
 # -----------------------Programa principal--------------------------------
 g = Graph(directed=False)
@@ -175,6 +207,28 @@ g.add_edge(Edge(vertex_b, vertex_c, 4))
 g.add_edge(Edge(vertex_b, vertex_d, 5))
 g.add_edge(Edge(vertex_c, vertex_d, 2))
 g.add_edge(Edge(vertex_b, vertex_d, 5))
+
+# #ejemplo uso de kruskal
+# v1 = Vertex("A")
+# v2 = Vertex("B")
+# v3 = Vertex("C")
+# v4 = Vertex("D")
+
+# g.add_vertex(v1)
+# g.add_vertex(v2)
+# g.add_vertex(v3)
+# g.add_vertex(v4)
+
+# edge1 = Edge(v1, v2, 10)
+# edge2 = Edge(v1, v3, 6)
+# edge3 = Edge(v1, v4, 5)
+# edge4 = Edge(v2, v4, 15)
+# edge5 = Edge(v3, v4, 4)
+
+# g.add_edge(edge1)
+# g.add_edge(edge2)
+# g.add_edge(edge3)
+# g.add_edge(edge4)
 
 # Si fuera no dirigido:
 # graph_dict = {'a': [('b', 1), ('c', 2)],
@@ -203,6 +257,9 @@ print("Árbol de expansión mínima:", arbol_expansion_minima)
 print("Suma total del árbol:", suma_total)
 
 print(g.dijkstra(vertex_a))
+minimum_spanning_tree, total_weight = g.kruskal()
+print("arbol de expansion minima(Kruskal): ",minimum_spanning_tree)
+print("Peso total(Kruskal):",total_weight)
 
 # ({'A': 0, 'B': 1, 'C': 2, 'D': 4}, {'B': 'A', 'C': 'A', 'D': 'B'})
 # ({'a': 0}, {})
