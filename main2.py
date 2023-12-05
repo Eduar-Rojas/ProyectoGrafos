@@ -104,32 +104,51 @@ class Graph:
                     self.DFS(neighbour, visited)
 
     def dijkstra(self, initial):
-        print("Algoritmo Dijkstra ejecutándose: ")
-        visited = {initial.get_name(): 0}
-        path = {}
+            visited = {initial.get_name(): 0}
+            path = {}
 
-        nodes = set(self.graph_dict.keys())
+            nodes = set(self.graph_dict.keys())
 
-        while nodes:
-            min_node = None
-            for node in nodes:
-                if node in visited:
-                    if min_node is None or visited[node] < visited[min_node]:
-                        min_node = node
+            while nodes:
+                min_node = None
+                for node in nodes:
+                    if node.get_name() in visited:
+                        if min_node is None:
+                            min_node = node
+                        elif visited[node.get_name()] < visited[min_node.get_name()]:
+                            min_node = node
 
-            if min_node is None:
-                break
+                if min_node is None:
+                    break
 
-            nodes.remove(min_node)
-            current_weight = visited[min_node]
+                nodes.remove(min_node)
+                current_weight = visited[min_node.get_name()]
 
-            for neighbor, weight in self.graph_dict[min_node]:
-                total_weight = current_weight + weight
-                if neighbor not in visited or total_weight < visited[neighbor]:
-                    visited[neighbor] = total_weight
-                    path[neighbor] = min_node
+                for neighbor, weight in self.graph_dict[min_node]:
+                    total_weight = current_weight + weight
+                    if neighbor.get_name() not in visited or total_weight < visited[neighbor.get_name()]:
+                        visited[neighbor.get_name()] = total_weight
+                        path[neighbor.get_name()] = min_node.get_name()
 
-        return visited, path
+            return visited, path
+
+    def bellman_ford(self, source):
+        distance = {vertex.get_name(): float('inf') for vertex in self.graph_dict}
+        distance[source.get_name()] = 0
+
+        for _ in range(len(self.graph_dict) - 1):
+            for vertex in self.graph_dict:
+                for neighbour, weight in self.graph_dict[vertex]:
+                    if distance[vertex.get_name()] != float('inf') and distance[vertex.get_name()] + weight < distance[neighbour.get_name()]:
+                        distance[neighbour.get_name()] = distance[vertex.get_name()] + weight
+
+        for vertex in self.graph_dict:
+            for neighbour, weight in self.graph_dict[vertex]:
+                if distance[vertex.get_name()] != float('inf') and distance[vertex.get_name()] + weight < distance[neighbour.get_name()]:
+                    print("El grafo contiene un ciclo de peso negativo")
+                    return
+
+        return distance
 
     def prim(self):
         visitados = set()
@@ -261,5 +280,7 @@ minimum_spanning_tree, total_weight = g.kruskal()
 print("arbol de expansion minima(Kruskal): ",minimum_spanning_tree)
 print("Peso total(Kruskal):",total_weight)
 
-# ({'A': 0, 'B': 1, 'C': 2, 'D': 4}, {'B': 'A', 'C': 'A', 'D': 'B'})
-# ({'a': 0}, {})
+# Dijkstra
+#print(g.dijkstra(vertex_a))
+# Bellman-Ford
+#print(g.bellman_ford(vertex_a))
