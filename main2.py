@@ -188,25 +188,25 @@ class Graph:
 # -----------------------Programa principal--------------------------------
 g = Graph(directed=False)
 
-# Creando vértices
-vertex_a = Vertex('a')
-vertex_b = Vertex('b')
-vertex_c = Vertex('c')
-vertex_d = Vertex('d')
+# # Creando vértices
+# vertex_a = Vertex('a')
+# vertex_b = Vertex('b')
+# vertex_c = Vertex('c')
+# vertex_d = Vertex('d')
 
-# Añadir vértices al grafo                       
-g.add_vertex(vertex_a)
-g.add_vertex(vertex_b)
-g.add_vertex(vertex_c)
-g.add_vertex(vertex_d)
+# # Añadir vértices al grafo                       
+# g.add_vertex(vertex_a)
+# g.add_vertex(vertex_b)
+# g.add_vertex(vertex_c)
+# g.add_vertex(vertex_d)
 
-# Creamos aristas a partir de los vértices existentes en el grafo 
-g.add_edge(Edge(vertex_a, vertex_b, 1))
-g.add_edge(Edge(vertex_a, vertex_d, 5))
-g.add_edge(Edge(vertex_b, vertex_c, 4))
-g.add_edge(Edge(vertex_b, vertex_d, 5))
-g.add_edge(Edge(vertex_c, vertex_d, 2))
-g.add_edge(Edge(vertex_b, vertex_d, 5))
+# # Creamos aristas a partir de los vértices existentes en el grafo 
+# g.add_edge(Edge(vertex_a, vertex_b, 1))
+# g.add_edge(Edge(vertex_a, vertex_d, 5))
+# g.add_edge(Edge(vertex_b, vertex_c, 4))
+# g.add_edge(Edge(vertex_b, vertex_d, 5))
+# g.add_edge(Edge(vertex_c, vertex_d, 2))
+# g.add_edge(Edge(vertex_b, vertex_d, 5))
 
 # #ejemplo uso de kruskal
 # v1 = Vertex("A")
@@ -229,6 +229,25 @@ g.add_edge(Edge(vertex_b, vertex_d, 5))
 # g.add_edge(edge2)
 # g.add_edge(edge3)
 # g.add_edge(edge4)
+##prueba de kruskal y prim si dan pesos distintos dado un grafo especifico
+vertex_a = Vertex('A')
+vertex_b = Vertex('B')
+vertex_c = Vertex('C')
+vertex_d = Vertex('D')
+
+# Añadir vértices al grafo                       
+g.add_vertex(vertex_a)
+g.add_vertex(vertex_b)
+g.add_vertex(vertex_c)
+g.add_vertex(vertex_d)
+
+# Creamos aristas a partir de los vértices existentes en el grafo 
+g.add_edge(Edge(vertex_a, vertex_b, 4))
+g.add_edge(Edge(vertex_b, vertex_c, 2))
+g.add_edge(Edge(vertex_b, vertex_d, 1))
+g.add_edge(Edge(vertex_b, vertex_a, 5))
+g.add_edge(Edge(vertex_c, vertex_d, 1))
+
 
 # Si fuera no dirigido:
 # graph_dict = {'a': [('b', 1), ('c', 2)],
@@ -249,6 +268,9 @@ g.add_edge(Edge(vertex_b, vertex_d, 5))
 #g.DFS(vertex_c)
 
 # Mostrar adyacencias de vértices
+
+
+
 
 print(g)
 
