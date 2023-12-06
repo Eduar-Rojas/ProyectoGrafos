@@ -35,7 +35,7 @@ class Edge:
 
 class Graph:
     # Constructor, crea un grafo con un diccionario
-    def __init__(self, directed=True):
+    def __init__(self, directed=False):
         self.graph_dict = {}
         self.directed = directed
 
@@ -150,11 +150,11 @@ class Graph:
 
         return distance
 
-    def prim(self):
+    def prim(self,initial):
         visitados = set()
         arbolSM = []
         suma_total = 0
-        nodoI = list(self.graph_dict.keys())[0]
+        nodoI = initial
         cola = [(0, nodoI)]
 
         while cola:
@@ -202,6 +202,44 @@ class Graph:
                 total_weight += weight#y suma el peso
 
         return minimum_spanning_tree, total_weight
+    
+    def floyd_warshall(self):
+        num_vertices = len(self.graph_dict)
+        distance = [[float('inf')]*num_vertices for _ in range(num_vertices)]#repren todos a inf
+
+        # Iniciar la matriz de distancias con los pesos de las aristas existentes
+        for vertex, neighbors in self.graph_dict.items():#clave valor| vertex = vertice | neighbors = lista vecinos cn peso(vecino-peso)
+            vertex_index = list(self.graph_dict.keys()).index(vertex)#obt vertice actual indicex
+            distance[vertex_index][vertex_index] = 0  # Asegurar que la diagonal principal sea cero
+            print("vertice actual:",vertex)
+            for neighbor, weight in neighbors:#se itera sobre neighbor(vecino-peso)
+                print("vecino",neighbor)
+                print("su peso:",weight)
+                neighbor_index = list(self.graph_dict.keys()).index(neighbor)
+                distance[vertex_index][neighbor_index] = weight
+
+        # Aplicar el algoritmo de Floyd-Warshall
+        for k in range(num_vertices):#
+            print("matriz formada:",distance)
+            for i in range(num_vertices):
+                for j in range(num_vertices):
+                    if distance[i][k] + distance[k][j] < distance[i][j]:#si la distancia de i a j por k es menor a ij
+                        distance[i][j] = distance[i][k] + distance[k][j]#actualiza  
+
+        # Imprimir la solución
+        print('Distancia más corta entre cada par de nodos:')
+        for i in range(num_vertices):
+            print("\n-------------------------------------------------------------------")
+            for j in range(num_vertices):
+                if distance[i][j] == float('inf'):
+                    print(f"{list(self.graph_dict.keys())[i]} ---> {list(self.graph_dict.keys())[j]}: INF", end='  | ')
+                else:
+                    print(f"{list(self.graph_dict.keys())[i]} ---> {list(self.graph_dict.keys())[j]}: {distance[i][j]}", end='  | ')
+            print()
+        print("\n-------------------------------------------------------------------")
+        return distance
+
+
 
 
 # -----------------------Programa principal--------------------------------
@@ -293,7 +331,7 @@ g.add_edge(Edge(vertex_c, vertex_d, 1))
 
 print(g)
 
-arbol_expansion_minima, suma_total = g.prim()
+arbol_expansion_minima, suma_total = g.prim(vertex_c)
 print("Árbol de expansión mínima:", arbol_expansion_minima)
 print("Suma total del árbol:", suma_total)
 
@@ -301,8 +339,44 @@ print(g.dijkstra(vertex_a))
 minimum_spanning_tree, total_weight = g.kruskal()
 print("arbol de expansion minima(Kruskal): ",minimum_spanning_tree)
 print("Peso total(Kruskal):",total_weight)
-
+g.floyd_warshall()
 # Dijkstra
 #print(g.dijkstra(vertex_a))
 # Bellman-Ford
 #print(g.bellman_ford(vertex_a))
+
+
+# #ejemplo de gpt
+# # Crear instancias de vértices
+# vertex_a = Vertex("A")
+# vertex_b = Vertex("B")
+# vertex_c = Vertex("C")
+
+# # Crear un grafo dirigido
+# directed_graph = Graph(directed=False)#no dirigido
+
+# # Agregar vértices al grafo
+# directed_graph.add_vertex(vertex_a)
+# directed_graph.add_vertex(vertex_b)
+# directed_graph.add_vertex(vertex_c)
+
+# # Agregar aristas al grafo
+# edge_ab = Edge(vertex_a, vertex_b, 2)
+# edge_bc = Edge(vertex_b, vertex_c, 3)
+# edge_ca = Edge(vertex_c, vertex_a, 1)
+
+# directed_graph.add_edge(edge_ab)
+# directed_graph.add_edge(edge_bc)
+# directed_graph.add_edge(edge_ca)
+
+# # Imprimir el grafo dirigido
+# print("Grafo dirigido:")
+# print(directed_graph)
+
+# # Aplicar el algoritmo de Floyd-Warshall
+# distance_matrix = directed_graph.floyd_warshall()
+
+# # Imprimir la matriz de distancias
+# print("\nMatriz de distancias después de aplicar Floyd-Warshall:")
+# for row in distance_matrix:
+#     print(row)
