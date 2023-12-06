@@ -35,7 +35,7 @@ class Edge:
 
 class Graph:
     # Constructor, crea un grafo con un diccionario
-    def __init__(self, directed=False):
+    def __init__(self, directed=True):
         self.graph_dict = {}
         self.directed = directed
 
@@ -90,18 +90,41 @@ class Graph:
                     visited.append(neighbour)
                     queue.append(neighbour)
 
-    def DFS(self, start, visited=None):
+    def DFS(self, start, stack=None, visited=None, order=None):
         if visited is None:
             visited = set()
+        if stack is None:
+            stack = []
+        if order is None:
+            order = []
 
         if start not in visited:
-            print(start)
+            order.append(start.get_name())
             visited.add(start)
 
             for neighbour in self.graph_dict[start]:
                 neighbour = neighbour[0]
                 if neighbour not in visited:
-                    self.DFS(neighbour, visited)
+                    self.DFS(neighbour, stack, visited, order)
+
+            stack.append(start.get_name())
+        return order
+
+    def topological_sort(self):
+        if self.directed == True:
+            stack = []
+            visited = set()
+
+            for vertex in self.graph_dict:
+                if vertex not in visited:
+                    self.DFS(vertex, stack, visited)
+
+            ordering = []
+            while stack:
+                ordering.append(stack.pop())
+            return ordering
+        else:
+            return "El grafo no es DAG"
 
     def dijkstra(self, initial):
             visited = {initial.get_name(): 0}
