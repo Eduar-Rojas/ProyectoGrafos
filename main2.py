@@ -112,7 +112,6 @@ class Graph:
 
 #-- DFS ------ ------------------------------------
     def DFS(self, start, stack=None, visited=None, order=None):
-        print("Algoritmo DFS: \n")
         if visited is None:
             visited = set()
         if stack is None:
@@ -181,18 +180,21 @@ class Graph:
 
             return visited, path
 
-#-- Bellman forn ------ -------------------------------------------
+#-- Bellman ford -------------------------------------------------
     def bellman_ford(self, source):
+        # Inicializa las distancias
         print("Algoritmo Bellman Ford: \n")
         distance = {vertex.get_name(): float('inf') for vertex in self.graph_dict}
         distance[source.get_name()] = 0
 
+        # Relaja las aristas: Actualizar las distancias si se encuentra una ruta más corta
         for _ in range(len(self.graph_dict) - 1):
             for vertex in self.graph_dict:
                 for neighbour, weight in self.graph_dict[vertex]:
                     if distance[vertex.get_name()] != float('inf') and distance[vertex.get_name()] + weight < distance[neighbour.get_name()]:
                         distance[neighbour.get_name()] = distance[vertex.get_name()] + weight
 
+        # Verifica si existe ciclo negativo
         for vertex in self.graph_dict:
             for neighbour, weight in self.graph_dict[vertex]:
                 if distance[vertex.get_name()] != float('inf') and distance[vertex.get_name()] + weight < distance[neighbour.get_name()]:
@@ -237,26 +239,32 @@ class Graph:
             print("El algoritmo de Kruskal solo se puede ejecutar en grafos no dirigidos.")
             return None, None
         
+        # Inicialización de la lista de aristas
         print("Algoritmo Kruskal: \n")
         edges = []
         for vertex, neighbors in self.graph_dict.items():
             for neighbor, weight in neighbors:
-                edges.append((weight, vertex, neighbor))
+                edges.append((weight, vertex, neighbor)) # Esto se agrega a la lista
 
+        # Ordenamiento de aristas en orden ascendentes
         edges.sort(key=lambda edge: edge[0])
 
+        # Se inicializa el diccionario parent. Inicialización de estructuras de conjuntos 
         parent = {vertex: vertex for vertex in self.graph_dict}
 
+        # encuentra la raíz del conjunto al que pertenece un vértice
         def find(v):
             if parent[v] != v:
                 parent[v] = find(parent[v])
             return parent[v]
 
+        # une dos conjuntos disjuntos especificando sus representantes.
         def union(v1, v2):
             root1 = find(v1)
             root2 = find(v2)
             parent[root1] = root2
 
+        # Se construye el árbol de expansión mínima
         minimum_spanning_tree = []
         total_weight = 0
 
@@ -345,47 +353,47 @@ class Graph:
         return numero_cromatico, self.colors
 
 # -----------------------Programa principal y vertices --------------------------------
-graph = Graph(directed=False)
+# graph = Graph()
 
-#  Vertices
-a = Vertex('A')
-b = Vertex('B')
-c = Vertex('C')
-d = Vertex('D')
-e = Vertex('E')
-f = Vertex('F')
-g = Vertex('G')
-h = Vertex('H')
-i = Vertex('I')
-j = Vertex('J')
-k = Vertex('K')
+# #  Vertices
+# a = Vertex('A')
+# b = Vertex('B')
+# c = Vertex('C')
+# d = Vertex('D')
+# e = Vertex('E')
+# f = Vertex('F')
+# g = Vertex('G')
+# h = Vertex('H')
+# i = Vertex('I')
+# j = Vertex('J')
+# k = Vertex('K')
 
 # --Ejemplos BFS, DFS y Dijkstra --------------
 
-graph.add_vertex(a)
-graph.add_vertex(b)
-graph.add_vertex(c)
-graph.add_vertex(d)
-graph.add_vertex(e)
-graph.add_vertex(f)
-graph.add_vertex(g)
-graph.add_vertex(h)
-graph.add_vertex(i)
-graph.add_vertex(j)
-graph.add_vertex(k)
+# graph.add_vertex(a)
+# graph.add_vertex(b)
+# graph.add_vertex(c)
+# graph.add_vertex(d)
+# graph.add_vertex(e)
+# graph.add_vertex(f)
+# graph.add_vertex(g)
+# graph.add_vertex(h)
+# graph.add_vertex(i)
+# graph.add_vertex(j)
+# graph.add_vertex(k)
 
-graph.add_edge(Edge(a, b, 5))
-graph.add_edge(Edge(a, c, 5))
-graph.add_edge(Edge(a, d, 6))
-graph.add_edge(Edge(b, e, 3))
-graph.add_edge(Edge(b, f, 6))
-graph.add_edge(Edge(c, g, 3))
-graph.add_edge(Edge(d, g, 4))
-graph.add_edge(Edge(d, h, 7))
-graph.add_edge(Edge(f, i, 8))
-graph.add_edge(Edge(f, j, 9))
-graph.add_edge(Edge(g, k, 7))
-graph.add_edge(Edge(j, k, 4))
+# graph.add_edge(Edge(a, b, 5))
+# graph.add_edge(Edge(a, c, 5))
+# graph.add_edge(Edge(a, d, 6))
+# graph.add_edge(Edge(b, e, 3))
+# graph.add_edge(Edge(b, f, 6))
+# graph.add_edge(Edge(c, g, 3))
+# graph.add_edge(Edge(d, g, 4))
+# graph.add_edge(Edge(d, h, 7))
+# graph.add_edge(Edge(f, i, 8))
+# graph.add_edge(Edge(f, j, 9))
+# graph.add_edge(Edge(g, k, 7))
+# graph.add_edge(Edge(j, k, 4))
 
 # graph.print_graph()
 
@@ -394,6 +402,7 @@ graph.add_edge(Edge(j, k, 4))
 # print(graph.DFS(a))
 # print(graph.dijkstra(a))
 # print(graph.topological_sort())
+# print(graph.bellman_ford(a))
 
 # arbol_expansion_minima, suma_total = graph.prim(a)
 # print("Árbol de expansión mínima:", arbol_expansion_minima)
@@ -435,25 +444,25 @@ graph.add_edge(Edge(j, k, 4))
 # ---------------------------------------
 
 #floyd warshall
-g = Graph()
+# g = Graph()
 
-vertex_a = Vertex('A')
-vertex_b = Vertex('B')
-vertex_c = Vertex('C')
-vertex_d = Vertex('D')
+# vertex_a = Vertex('A')
+# vertex_b = Vertex('B')
+# vertex_c = Vertex('C')
+# vertex_d = Vertex('D')
 
-# Añadir vértices al grafo                       
-g.add_vertex(vertex_a)
-g.add_vertex(vertex_b)
-g.add_vertex(vertex_c)
-g.add_vertex(vertex_d)
+# # Añadir vértices al grafo                       
+# g.add_vertex(vertex_a)
+# g.add_vertex(vertex_b)
+# g.add_vertex(vertex_c)
+# g.add_vertex(vertex_d)
 
-# Creamos aristas a partir de los vértices existentes en el grafo 
-g.add_edge(Edge(vertex_a, vertex_b, 4))
-g.add_edge(Edge(vertex_b, vertex_c, 2))
-g.add_edge(Edge(vertex_b, vertex_d, 1))
-g.add_edge(Edge(vertex_b, vertex_a, 5)) # Descomentar si es NO DIRIGIDO
-g.add_edge(Edge(vertex_c, vertex_d, 1))
+# # Creamos aristas a partir de los vértices existentes en el grafo 
+# g.add_edge(Edge(vertex_a, vertex_b, 4))
+# g.add_edge(Edge(vertex_b, vertex_c, 2))
+# g.add_edge(Edge(vertex_b, vertex_d, 1))
+# g.add_edge(Edge(vertex_b, vertex_a, 5)) # Descomentar si es NO DIRIGIDO
+# g.add_edge(Edge(vertex_c, vertex_d, 1))
 
 # print(g)
 
@@ -465,3 +474,39 @@ g.add_edge(Edge(vertex_c, vertex_d, 1))
 # print("arbol de expansion minima(Kruskal): ",minimum_spanning_tree)
 # print("Peso total(Kruskal):",total_weight)
 # g.floyd_warshall()
+
+graph = Graph()
+
+#  Vertices
+a = Vertex('A')
+b = Vertex('B')
+c = Vertex('C')
+d = Vertex('D')
+
+graph.add_vertex(a)
+graph.add_vertex(b)
+graph.add_vertex(c)
+graph.add_vertex(d)
+
+graph.add_edge(Edge(a, b, 16))
+graph.add_edge(Edge(b, a, 10))
+graph.add_edge(Edge(b, d, 30))
+graph.add_edge(Edge(c, a, 40))
+graph.add_edge(Edge(c, d, 25))
+graph.add_edge(Edge(d, c, 15))
+
+# arbol_expansion_minima, suma_total = graph.prim(a)
+# print("Árbol de expansión mínima(Prim):", arbol_expansion_minima)
+# print("Suma total del árbol:", suma_total)
+
+# minimum_spanning_tree, total_weight = graph.kruskal()
+# print("arbol de expansion minima(Kruskal): ",minimum_spanning_tree)
+# print("Peso total(Kruskal):",total_weight)
+
+# graph.greedy_coloring()
+print(graph.BFS(a))
+print(graph.DFS(a))
+# print(graph.dijkstra(a))
+# print(graph.bellman_ford(a))
+# print(graph.floyd_warshall())
+# print(graph.topological_sort())
