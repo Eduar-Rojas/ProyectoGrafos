@@ -353,7 +353,7 @@ class Graph:
         return numero_cromatico, self.colors
 
 # -----------------------Programa principal y vertices --------------------------------
-# graph = Graph()
+# graph = Graph(directed=False)
 
 # #  Vertices
 # a = Vertex('A')
@@ -388,8 +388,11 @@ class Graph:
 # graph.add_edge(Edge(b, e, 3))
 # graph.add_edge(Edge(b, f, 6))
 # graph.add_edge(Edge(c, g, 3))
+# graph.add_edge(Edge(c, d, 3))
+# graph.add_edge(Edge(c, h, 3))
 # graph.add_edge(Edge(d, g, 4))
 # graph.add_edge(Edge(d, h, 7))
+# graph.add_edge(Edge(d, k, 7))
 # graph.add_edge(Edge(f, i, 8))
 # graph.add_edge(Edge(f, j, 9))
 # graph.add_edge(Edge(g, k, 7))
@@ -489,9 +492,10 @@ graph.add_vertex(c)
 graph.add_vertex(d)
 
 graph.add_edge(Edge(a, b, 16))
-graph.add_edge(Edge(b, a, 10))
+graph.add_edge(Edge(b, a, 8))
 graph.add_edge(Edge(b, d, 30))
 graph.add_edge(Edge(c, a, 40))
+graph.add_edge(Edge(c, b, 15))
 graph.add_edge(Edge(c, d, 25))
 graph.add_edge(Edge(d, c, 15))
 
@@ -504,9 +508,9 @@ graph.add_edge(Edge(d, c, 15))
 # print("Peso total(Kruskal):",total_weight)
 
 # graph.greedy_coloring()
-print(graph.BFS(a))
-print(graph.DFS(a))
-# print(graph.dijkstra(a))
+# print(graph.BFS(a))
+# print(graph.DFS(a))
+print(graph.dijkstra(d))
 # print(graph.bellman_ford(a))
 # print(graph.floyd_warshall())
 # print(graph.topological_sort())
