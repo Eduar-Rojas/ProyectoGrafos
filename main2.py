@@ -1,4 +1,4 @@
-import heapq 
+# ---- Clase VERTICE ------ ------------------------------------ 
 class Vertex:
     # Constructor
     def __init__(self, name):
@@ -11,7 +11,8 @@ class Vertex:
     # Gets and sets
     def get_name(self):
         return self.name
-
+    
+# ---- Clase ARISTA ------ ------------------------------------
 class Edge:
     # Constructor
     def __init__(self, vertex_1, vertex_2, weight):
@@ -33,18 +34,23 @@ class Edge:
     def get_weight(self):
         return self.weight
 
+# ---- Clase GRAFO ------ ------------------------------------
 class Graph:
     # Constructor, crea un grafo con un diccionario
     def __init__(self, directed=True):
         self.graph_dict = {}
         self.directed = directed
+        self.colors = {}
 
     # Obtener datos del grafo
     def __str__(self):
         graph_dict = ""
         for vertex, neighbors in self.graph_dict.items():
             for neighbor, weight in neighbors:
-                graph_dict += f"{vertex.get_name()} ---({weight})---> {neighbor.get_name()}\n"
+                if self.directed:
+                    graph_dict += f"{vertex.get_name()} ---({weight})---> {neighbor.get_name()}\n"
+                else:
+                    graph_dict += f"{vertex.get_name()} ---({weight})--- {neighbor.get_name()}\n"
         return graph_dict
 
     # Añade un vértice al grafo (él vertice debe estár creado)
@@ -52,7 +58,7 @@ class Graph:
         if vertex in self.graph_dict:
             return print("El Vertice ya está en el grafo:",vertex)
         self.graph_dict[vertex] = []
-        print(f"el vertice: {vertex} se agregó al diccionario")
+        print(f"el vertice: {vertex} se agregó al grafo")
 
     # Añade una arista al grafo (la arista debe estár creada)
     def add_edge(self, edge):
@@ -61,36 +67,52 @@ class Graph:
         weight = edge.get_weight()
         self.graph_dict[vertex_1].append((vertex_2, weight))
         if not self.directed:
-            self.graph_dict[vertex_2].append((vertex_1, weight))  # Agregar esta línea si el grafo es no dirigido
+            self.graph_dict[vertex_2].append((vertex_1, weight)) 
 
     # verificar si un vertice existe
     def get_vertex(self, vertex_name):
         for v in self.graph_dict:
             if vertex_name == v.get_name():
                 return print("existe ", v)
-        print(f"El vétice {vertex_name} no existe")
+        print(f"{vertex_name} no existe")
 
-    #Topological sort
-    
+    def print_graph(self):
+        print("graph_dict = {")
+        for vertice, vecinos in self.graph_dict.items():
+            print(f"    '{vertice}': [", end="")
+            for idx, (vecino, peso) in enumerate(vecinos):
+                print(f"('{vecino}', {peso})", end="")
+                if idx < len(vecinos) - 1:
+                    print(", ", end="")
+            print("],")
+        print("}")
 
-    def BFS(self, start):
+#-- BFS ------ ------------------------------------
+    def BFS(self, start, order=None):
+        print("Algoritmo BFS: \n")
         visited = []
         queue = []
+
+        if order is None:
+            order = []
 
         visited.append(start)
         queue.append(start)
 
         while queue:
             s = queue.pop(0)
-            print(s, end=" ")
+            order.append(s.get_name())
 
             for neighbour in self.graph_dict[s]:
                 neighbour = neighbour[0]
                 if neighbour not in visited:
                     visited.append(neighbour)
                     queue.append(neighbour)
+        return order
 
+#-- DFS ------ ------------------------------------
     def DFS(self, start, stack=None, visited=None, order=None):
+        print("Algoritmo DFS: \n")
         if visited is None:
             visited = set()
         if stack is None:
@@ -110,7 +132,9 @@ class Graph:
             stack.append(start.get_name())
         return order
 
+#-- Topological Sort ------ ------------------------------------
     def topological_sort(self):
+        print("Algoritmo de Topological Sort: \n")
         if self.directed == True:
             stack = []
             visited = set()
@@ -126,7 +150,9 @@ class Graph:
         else:
             return "El grafo no es DAG"
 
+#-- Dijkstra ------ -------------------------------------------
     def dijkstra(self, initial):
+            print("Algoritmo Dijkstra: \n")
             visited = {initial.get_name(): 0}
             path = {}
 
@@ -155,7 +181,9 @@ class Graph:
 
             return visited, path
 
+#-- Bellman forn ------ -------------------------------------------
     def bellman_ford(self, source):
+        print("Algoritmo Bellman Ford: \n")
         distance = {vertex.get_name(): float('inf') for vertex in self.graph_dict}
         distance[source.get_name()] = 0
 
@@ -173,28 +201,43 @@ class Graph:
 
         return distance
 
-    def prim(self,initial):
+#-- Prim ------ -------------------------------------------
+    
+    def prim(self, initial):
+        if self.directed:
+            print("El algoritmo de Prim solo se puede ejecutar en grafos no dirigidos.")
+            return None, None
+        
+        print("Algoritmo Prim: \n")
         visitados = set()
         arbolSM = []
         suma_total = 0
-        nodoI = initial
-        cola = [(0, nodoI)]
+
+        cola = [(0, None, initial)]
 
         while cola:
-            peso, nodoA = heapq.heappop(cola)
+            cola.sort(key=lambda x: x[0])
+            peso, origen, nodo_actual = cola.pop(0)
 
-            if nodoA not in visitados:
-                visitados.add(nodoA)
-                arbolSM.append((nodoA.get_name(), peso))  # Cambiar aquí
-                suma_total += peso
+            if nodo_actual not in visitados:
+                visitados.add(nodo_actual)
+                if origen is not None:
+                    arbolSM.append((origen.get_name(), nodo_actual.get_name(), peso))
+                    suma_total += peso
 
-                if nodoA in self.graph_dict:
-                    for vecino, pesoB in self.graph_dict[nodoA]:
+                if nodo_actual in self.graph_dict:
+                    for vecino, peso_vecino in self.graph_dict[nodo_actual]:
                         if vecino not in visitados:
-                            heapq.heappush(cola, (pesoB, vecino))
+                            cola.append((peso_vecino, nodo_actual, vecino))
         return arbolSM, suma_total
     
+#-- Kruskal ------ -------------------------------------------    
     def kruskal(self):
+        if self.directed:
+            print("El algoritmo de Kruskal solo se puede ejecutar en grafos no dirigidos.")
+            return None, None
+        
+        print("Algoritmo Kruskal: \n")
         edges = []#almacena aristas
         for vertex, neighbors in self.graph_dict.items():#recorre el grafo
             for neighbor, weight in neighbors:
@@ -226,7 +269,9 @@ class Graph:
 
         return minimum_spanning_tree, total_weight
     
+#-- Floyd Warshall ------ -------------------------------------------      
     def floyd_warshall(self):
+        print("Algoritmo Floyd Warshall: \n")
         num_vertices = len(self.graph_dict)
         distance = [[float('inf')]*num_vertices for _ in range(num_vertices)]#repren todos a inf
 
@@ -261,11 +306,12 @@ class Graph:
             print()
         print("\n-------------------------------------------------------------------")
         return distance
-    
+
+#-- Greedy o Voraz (Es lo mismo)------ -------------------------------------------     
     def greedy_coloring(self):
         # Sólo para grafo no dirigido
         if self.directed:
-            return print ("El algoritmo solo se puede ejecutar en grafos no dirigidos")
+            return print ("El algoritmo Greedy sólo se puede ejecutar en grafos no dirigidos")
 
         color_counter = 0
 
@@ -302,144 +348,92 @@ class Graph:
 
         return numero_cromatico, self.colors
 
+# -----------------------Programa principal y vertices --------------------------------
+graph = Graph(directed=False)
 
+#  Vertices
+a = Vertex('A')
+b = Vertex('B')
+c = Vertex('C')
+d = Vertex('D')
+e = Vertex('E')
+f = Vertex('F')
+g = Vertex('G')
+h = Vertex('H')
+i = Vertex('I')
+j = Vertex('J')
+k = Vertex('K')
 
+# --Ejemplos BFS, DFS y Dijkstra --------------
 
-# -----------------------Programa principal--------------------------------
-g = Graph(directed=False)
+graph.add_vertex(a)
+graph.add_vertex(b)
+graph.add_vertex(c)
+graph.add_vertex(d)
+graph.add_vertex(e)
+graph.add_vertex(f)
+graph.add_vertex(g)
+graph.add_vertex(h)
+graph.add_vertex(i)
+graph.add_vertex(j)
+graph.add_vertex(k)
 
-# # Creando vértices
-# vertex_a = Vertex('a')
-# vertex_b = Vertex('b')
-# vertex_c = Vertex('c')
-# vertex_d = Vertex('d')
+graph.add_edge(Edge(a, b, 5))
+graph.add_edge(Edge(a, c, 5))
+graph.add_edge(Edge(a, d, 6))
+graph.add_edge(Edge(b, e, 3))
+graph.add_edge(Edge(b, f, 6))
+graph.add_edge(Edge(c, g, 3))
+graph.add_edge(Edge(d, g, 4))
+graph.add_edge(Edge(d, h, 7))
+graph.add_edge(Edge(f, i, 8))
+graph.add_edge(Edge(f, j, 9))
+graph.add_edge(Edge(g, k, 7))
+graph.add_edge(Edge(j, k, 4))
 
-# # Añadir vértices al grafo                       
-# g.add_vertex(vertex_a)
-# g.add_vertex(vertex_b)
-# g.add_vertex(vertex_c)
-# g.add_vertex(vertex_d)
+graph.print_graph()
 
-# # Creamos aristas a partir de los vértices existentes en el grafo 
-# g.add_edge(Edge(vertex_a, vertex_b, 1))
-# g.add_edge(Edge(vertex_a, vertex_d, 5))
-# g.add_edge(Edge(vertex_b, vertex_c, 4))
-# g.add_edge(Edge(vertex_b, vertex_d, 5))
-# g.add_edge(Edge(vertex_c, vertex_d, 2))
-# g.add_edge(Edge(vertex_b, vertex_d, 5))
+graph.greedy_coloring()
+# print(graph.BFS(a))
+# print(graph.DFS(a))
+# print(graph.dijkstra(a))
+# print(graph.topological_sort())
 
-# #ejemplo uso de kruskal
-# v1 = Vertex("A")
-# v2 = Vertex("B")
-# v3 = Vertex("C")
-# v4 = Vertex("D")
+# arbol_expansion_minima, suma_total = graph.prim(a)
+# print("Árbol de expansión mínima:", arbol_expansion_minima)
+# print("Suma total del árbol:", suma_total)
 
-# g.add_vertex(v1)
-# g.add_vertex(v2)
-# g.add_vertex(v3)
-# g.add_vertex(v4)
+# arbol_expansion_minima, suma_total = graph.kruskal()
+# print("Árbol de expansión mínima:", arbol_expansion_minima)
+# print("Suma total del árbol:", suma_total)
 
-# edge1 = Edge(v1, v2, 10)
-# edge2 = Edge(v1, v3, 6)
-# edge3 = Edge(v1, v4, 5)
-# edge4 = Edge(v2, v4, 15)
-# edge5 = Edge(v3, v4, 4)
-
-# g.add_edge(edge1)
-# g.add_edge(edge2)
-# g.add_edge(edge3)
-# g.add_edge(edge4)
-##prueba de kruskal y prim si dan pesos distintos dado un grafo especifico
-vertex_a = Vertex('A')
-vertex_b = Vertex('B')
-vertex_c = Vertex('C')
-vertex_d = Vertex('D')
-
-# Añadir vértices al grafo                       
-g.add_vertex(vertex_a)
-g.add_vertex(vertex_b)
-g.add_vertex(vertex_c)
-g.add_vertex(vertex_d)
-
-# Creamos aristas a partir de los vértices existentes en el grafo 
-g.add_edge(Edge(vertex_a, vertex_b, 4))
-g.add_edge(Edge(vertex_b, vertex_c, 2))
-g.add_edge(Edge(vertex_b, vertex_d, 1))
-g.add_edge(Edge(vertex_b, vertex_a, 5))
-g.add_edge(Edge(vertex_c, vertex_d, 1))
-
-
-# Si fuera no dirigido:
-# graph_dict = {'a': [('b', 1), ('c', 2)],
-#               'b': [('a', 1), ('d', 3)],
-#               'c': [('a', 2)]}
-
-# Si fuera dirigido:
-# graph_dict = {'a': [('b', 1), ('c', 2)],
-#               'b': [('d', 3)],
-#               'c': [()]}
-
-# Método del grafo BFS
-
-#g.BFS(vertex_a)
-
-# Método del grafo DFS
-
-#g.DFS(vertex_c)
-
-# Mostrar adyacencias de vértices
-
-
-
-
-print(g)
-
-arbol_expansion_minima, suma_total = g.prim(vertex_c)
-print("Árbol de expansión mínima:", arbol_expansion_minima)
-print("Suma total del árbol:", suma_total)
-
-print(g.dijkstra(vertex_a))
-minimum_spanning_tree, total_weight = g.kruskal()
-print("arbol de expansion minima(Kruskal): ",minimum_spanning_tree)
-print("Peso total(Kruskal):",total_weight)
-g.floyd_warshall()
-# Dijkstra
-#print(g.dijkstra(vertex_a))
-# Bellman-Ford
-#print(g.bellman_ford(vertex_a))
-
-
-# #ejemplo de gpt
-# # Crear instancias de vértices
-# vertex_a = Vertex("A")
-# vertex_b = Vertex("B")
-# vertex_c = Vertex("C")
-
-# # Crear un grafo dirigido
-# directed_graph = Graph(directed=False)#no dirigido
-
-# # Agregar vértices al grafo
-# directed_graph.add_vertex(vertex_a)
-# directed_graph.add_vertex(vertex_b)
-# directed_graph.add_vertex(vertex_c)
-
-# # Agregar aristas al grafo
-# edge_ab = Edge(vertex_a, vertex_b, 2)
-# edge_bc = Edge(vertex_b, vertex_c, 3)
-# edge_ca = Edge(vertex_c, vertex_a, 1)
-
-# directed_graph.add_edge(edge_ab)
-# directed_graph.add_edge(edge_bc)
-# directed_graph.add_edge(edge_ca)
-
-# # Imprimir el grafo dirigido
-# print("Grafo dirigido:")
-# print(directed_graph)
-
-# # Aplicar el algoritmo de Floyd-Warshall
-# distance_matrix = directed_graph.floyd_warshall()
-
-# # Imprimir la matriz de distancias
+# distance_matrix = graph.floyd_warshall()
 # print("\nMatriz de distancias después de aplicar Floyd-Warshall:")
 # for row in distance_matrix:
 #     print(row)
+
+# --Ejemplos con Greedy o Voraz ----------------------------------------------------------
+# graph.add_vertex(a)
+# graph.add_vertex(b)
+# graph.add_vertex(c)
+# graph.add_vertex(d)
+# graph.add_vertex(e)
+# graph.add_vertex(f)
+
+# #graph.add_edge(Edge(a, b, 3))
+# #graph.add_edge(Edge(b, c, 3))
+# graph.add_edge(Edge(c, d, 3))
+
+# graph.add_edge(Edge(c, d, 3))
+
+# graph.add_edge(Edge(d, e, 3))
+
+# #graph.add_edge(Edge(c, a, 3))
+
+# #graph.add_edge(Edge(e, f, 3))
+
+# print(graph)
+
+# graph.greedy_coloring()
+
+# ---------------------------------------
