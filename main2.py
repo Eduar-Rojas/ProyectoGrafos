@@ -91,7 +91,7 @@ class Graph:
     def BFS(self, start, order=None):
         print("Algoritmo BFS: \n")
         visited = []
-        queue = []
+        queue = [] # Registrará los vértices por visitar
 
         if order is None:
             order = []
@@ -116,7 +116,7 @@ class Graph:
         if visited is None:
             visited = set()
         if stack is None:
-            stack = []
+            stack = [] # Rastrea el orden de finalización de los vértices para posteriormente utilizarlo en topological_sort.
         if order is None:
             order = []
 
@@ -142,7 +142,7 @@ class Graph:
             for vertex in self.graph_dict:
                 if vertex not in visited:
                     self.DFS(vertex, stack, visited)
-
+            # Se comienza a desapilar
             ordering = []
             while stack:
                 ordering.append(stack.pop())
@@ -156,7 +156,7 @@ class Graph:
             visited = {initial.get_name(): 0}
             path = {}
 
-            nodes = set(self.graph_dict.keys())
+            nodes = set(self.graph_dict.keys()) # Lista de todos los vértices
 
             while nodes:
                 min_node = None
@@ -387,9 +387,9 @@ graph.add_edge(Edge(f, j, 9))
 graph.add_edge(Edge(g, k, 7))
 graph.add_edge(Edge(j, k, 4))
 
-graph.print_graph()
+# graph.print_graph()
 
-graph.greedy_coloring()
+# graph.greedy_coloring()
 # print(graph.BFS(a))
 # print(graph.DFS(a))
 # print(graph.dijkstra(a))
@@ -435,7 +435,7 @@ graph.greedy_coloring()
 # ---------------------------------------
 
 #floyd warshall
-g = Graph(directed=False)
+g = Graph()
 
 vertex_a = Vertex('A')
 vertex_b = Vertex('B')
@@ -452,16 +452,16 @@ g.add_vertex(vertex_d)
 g.add_edge(Edge(vertex_a, vertex_b, 4))
 g.add_edge(Edge(vertex_b, vertex_c, 2))
 g.add_edge(Edge(vertex_b, vertex_d, 1))
-g.add_edge(Edge(vertex_b, vertex_a, 5))
+g.add_edge(Edge(vertex_b, vertex_a, 5)) # Descomentar si es NO DIRIGIDO
 g.add_edge(Edge(vertex_c, vertex_d, 1))
 
-print(g)
+# print(g)
 
-arbol_expansion_minima, suma_total = g.prim(vertex_c)
-print("Árbol de expansión mínima(Prim):", arbol_expansion_minima)
-print("Suma total del árbol:", suma_total)
+# arbol_expansion_minima, suma_total = g.prim(vertex_c)
+# print("Árbol de expansión mínima(Prim):", arbol_expansion_minima)
+# print("Suma total del árbol:", suma_total)
 
-minimum_spanning_tree, total_weight = g.kruskal()
-print("arbol de expansion minima(Kruskal): ",minimum_spanning_tree)
-print("Peso total(Kruskal):",total_weight)
-g.floyd_warshall()
+# minimum_spanning_tree, total_weight = g.kruskal()
+# print("arbol de expansion minima(Kruskal): ",minimum_spanning_tree)
+# print("Peso total(Kruskal):",total_weight)
+# g.floyd_warshall()
