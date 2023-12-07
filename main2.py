@@ -238,34 +238,34 @@ class Graph:
             return None, None
         
         print("Algoritmo Kruskal: \n")
-        edges = []#almacena aristas
-        for vertex, neighbors in self.graph_dict.items():#recorre el grafo
+        edges = []
+        for vertex, neighbors in self.graph_dict.items():
             for neighbor, weight in neighbors:
-                edges.append((weight, vertex, neighbor))#añade como tupla el peso y los vertices que forman la arista
+                edges.append((weight, vertex, neighbor))
 
-        edges.sort(key=lambda edge: edge[0])#ordena las aristas en orden ascendente
+        edges.sort(key=lambda edge: edge[0])
 
         parent = {vertex: vertex for vertex in self.graph_dict}
 
-        def find(v):# encuentra la raíz del conjunto al que pertenece un vértice
+        def find(v):
             if parent[v] != v:
                 parent[v] = find(parent[v])
             return parent[v]
 
-        def union(v1, v2):#une dos conjuntos disjuntos especificando sus representantes.
+        def union(v1, v2):
             root1 = find(v1)
             root2 = find(v2)
             parent[root1] = root2
 
-        minimum_spanning_tree = []#arbol de expansion minima
-        total_weight = 0#peso total
+        minimum_spanning_tree = []
+        total_weight = 0
 
         for edge in edges:#
             weight, vertex_1, vertex_2 = edge
-            if find(vertex_1) != find(vertex_2):#VERIFICA si son del mismo conjunto disconjunto(estudiar)
-                union(vertex_1, vertex_2)#si no es asi los une y agrega al arbol de expansion minima
+            if find(vertex_1) != find(vertex_2):
+                union(vertex_1, vertex_2)
                 minimum_spanning_tree.append((vertex_1.get_name(), vertex_2.get_name(), weight))
-                total_weight += weight#y suma el peso
+                total_weight += weight
 
         return minimum_spanning_tree, total_weight
     
@@ -276,23 +276,19 @@ class Graph:
         distance = [[float('inf')]*num_vertices for _ in range(num_vertices)]#repren todos a inf
 
         # Iniciar la matriz de distancias con los pesos de las aristas existentes
-        for vertex, neighbors in self.graph_dict.items():#clave valor| vertex = vertice | neighbors = lista vecinos cn peso(vecino-peso)
-            vertex_index = list(self.graph_dict.keys()).index(vertex)#obt vertice actual indicex
-            distance[vertex_index][vertex_index] = 0  # Asegurar que la diagonal principal sea cero
-            print("vertice actual:",vertex)
+        for vertex, neighbors in self.graph_dict.items():
+            vertex_index = list(self.graph_dict.keys()).index(vertex)#obt. vertice actual
+            distance[vertex_index][vertex_index] = 0  
             for neighbor, weight in neighbors:#se itera sobre neighbor(vecino-peso)
-                print("vecino",neighbor)
-                print("su peso:",weight)
                 neighbor_index = list(self.graph_dict.keys()).index(neighbor)
                 distance[vertex_index][neighbor_index] = weight
 
         # Aplicar el algoritmo de Floyd-Warshall
         for k in range(num_vertices):#
-            print("matriz formada:",distance)
             for i in range(num_vertices):
                 for j in range(num_vertices):
                     if distance[i][k] + distance[k][j] < distance[i][j]:#si la distancia de i a j por k es menor a ij
-                        distance[i][j] = distance[i][k] + distance[k][j]#actualiza  
+                        distance[i][j] = distance[i][k] + distance[k][j] 
 
         # Imprimir la solución
         print('Distancia más corta entre cada par de nodos:')
@@ -437,3 +433,35 @@ graph.greedy_coloring()
 # graph.greedy_coloring()
 
 # ---------------------------------------
+
+#floyd warshall
+g = Graph(directed=False)
+
+vertex_a = Vertex('A')
+vertex_b = Vertex('B')
+vertex_c = Vertex('C')
+vertex_d = Vertex('D')
+
+# Añadir vértices al grafo                       
+g.add_vertex(vertex_a)
+g.add_vertex(vertex_b)
+g.add_vertex(vertex_c)
+g.add_vertex(vertex_d)
+
+# Creamos aristas a partir de los vértices existentes en el grafo 
+g.add_edge(Edge(vertex_a, vertex_b, 4))
+g.add_edge(Edge(vertex_b, vertex_c, 2))
+g.add_edge(Edge(vertex_b, vertex_d, 1))
+g.add_edge(Edge(vertex_b, vertex_a, 5))
+g.add_edge(Edge(vertex_c, vertex_d, 1))
+
+print(g)
+
+arbol_expansion_minima, suma_total = g.prim(vertex_c)
+print("Árbol de expansión mínima(Prim):", arbol_expansion_minima)
+print("Suma total del árbol:", suma_total)
+
+minimum_spanning_tree, total_weight = g.kruskal()
+print("arbol de expansion minima(Kruskal): ",minimum_spanning_tree)
+print("Peso total(Kruskal):",total_weight)
+g.floyd_warshall()
